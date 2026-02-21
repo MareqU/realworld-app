@@ -54,6 +54,7 @@ export default defineConfig({
       name: 'api',
       testDir: './specs/api',
       testMatch: '**/*.spec.ts',
+      // dependencies: ['setup'],
       use: {
         // ...devices['Desktop Chrome'], // Optional, but usually browserName: undefined is better
         baseURL: process.env.VITE_BACKEND_PORT
