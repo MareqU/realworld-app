@@ -3,17 +3,15 @@ import path from 'path';
 
 const authFile = path.join(__dirname, '../.auth/user.json');
 
-setup('authenticate', async ({ request, db, seedDatabase, baseURL }) => {
-    const users = db.filter('users', {});
-    const user = users[0];
-
+setup('authenticate', async ({ request, db, seedDatabase, baseURL, statusValidations}) => {
     const response = await request.post(`/login`, {
+        // Only temporary solution, it would be taken from .env
         data: {
-            username: process.env.TEST_USER,
-            password: process.env.TEST_PASS
+            username: 'Heath93',
+            password: 's3cret'
         }
     })
 
-    await expect(response, `Failed to login as ${user.username}`).toBeOK();
+    await statusValidations.expectStatus(response, statusValidations.OK)
     await request.storageState({ path: authFile });
 })

@@ -1,30 +1,42 @@
 import { test as base } from '@playwright/test';
 import { UserApi } from './support/api-objects/UserApi';
+import { LoginApi } from './support/api-objects/LoginApi';
+import { TransactionsApi } from './support/api-objects/Transactions.Api';
+import { UserValidations } from './support/validations/userValidations';
+import { StatusValidations } from './support/validations/statusValidations';
+import { TransactionValidations } from './support/validations/transactionValidations';
 import fs from 'fs';
 import path from 'path';
 
 type fixtures = {
-    seedDatabase: void,
+    seedDatabase: () => Promise<void>,
     db: {
         find: (entity: string, attrs: object) => any;
         filter: (entity: string, attrs: object) => any[];
     };
+
     // API objects
     userApi: UserApi;
+    loginApi: LoginApi;
+    transactionsApi: TransactionsApi
+
+    // Validations
+    statusValidations: StatusValidations;
+    userValidations: UserValidations;
+    transactionValidations: TransactionValidations;
+
 };
 
 export const test = base.extend<fixtures>({
     
-    userApi: async({ request }, use) => {
-        await use(new UserApi(request))
-    },
-
     seedDatabase: async ({ request, baseURL }, use) => {
 
-        console.log('Seeding database via API at baseURL:', baseURL);
+        const seedAction = async () => {
+            const response = await request.post(`${baseURL}/testData/seed`);
+            if (!response.ok()) throw new Error('Seed failed!');
+        };
 
-        await request.post(`/testData/seed`);
-        await use();
+        await use(seedAction);
     },
 
     db: async({}, use) => {
@@ -51,6 +63,32 @@ export const test = base.extend<fixtures>({
 
         await use(dbUtils);
     },
+
+    // Api objects
+    userApi: async({ request }, use) => {
+        await use(new UserApi(request));
+    },
+
+    loginApi: async({ request }, use) => {
+        await use(new LoginApi(request));
+    },
+
+    transactionsApi: async({ request }, use) => {
+        await use(new TransactionsApi(request));
+    },
+
+    // Validations
+    statusValidations: async({}, use) => {
+        await use(new StatusValidations());
+    },
+
+    userValidations: async({}, use) => {
+        await use(new UserValidations());
+    },
+
+    transactionValidations: async({}, use) => {
+        await use(new TransactionValidations());
+    },    
 })
 
 export { expect } from '@playwright/test'
