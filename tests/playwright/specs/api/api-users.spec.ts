@@ -1,52 +1,111 @@
-import { test, expect } from '../../fixtures';
-import { assertValidUser, assertUserProfile } from '../../support/assertions/userAssertions';
+import { test } from '../../fixtures';
 import { User } from '../../../../src/models/user';
+import { createdUserPayload } from '../../support/factories/userFactory';
 
-test.describe('Users API', () => {
-    
-    test('GET /users - should return a list of users', async ({ request, seedDatabase, userApi }) => {  
-        const response = await userApi.getAllUsers(); 
-        const body = await response.json();
-        const user = body.results[0];
+    let testUser: User
 
-        expect(response.status()).toBe(200);
-        assertValidUser(user);
-    })
-
-    test('GET /users/:id - should return specific user by id', async ({ userApi, db, seedDatabase }) => {
-        const userInDb = await db.find('users', {});
-
-        const response = await userApi.getUserById(userInDb.id);
-        const body = await response.json();
-
-        expect(response.status()).toBe(200);
-        assertValidUser(body.user);
+    test.beforeAll(async ({ seedDatabase, db }) => {
+        testUser = await db.find('users', {}); 
     });
+
+    test.describe('GET /users', () => {
+        
+        test('retrieves a paginated list of all users', async ({ request, userApi, statusValidations, userValidations }) => {  
+            const response = await userApi.getAllUsers(); 
+            await statusValidations.expectStatus(response, statusValidations.OK)
+            const body = await response.json();
+            
+            const user = body.results[0];
+            userValidations.assertValidUser(user);
+        });
+
+        test('retrieves a single user by their unique id', async ({ userApi, statusValidations, userValidations }) => {
+            const response = await userApi.getUserById(testUser.id);
+            await statusValidations.expectStatus(response, statusValidations.OK)
+            const body = await response.json();
+
+            userValidations.assertValidUser(body.user);
+        });
+        
+        test('returns 404 Not Found when the user ID does not exist', async ({ userApi, statusValidations }) => {
+            const nonExistentId = '0000000';
+
+            const response = await userApi.getUserById(nonExistentId);
+            await statusValidations.expectStatus(response, statusValidations.UNAUTHORIZED)
+
+            statusValidations.expectError(response);
+        });
+
+        test('fetches public profile data via username handle', async ({ userApi, statusValidations, userValidations }) => {        
+            const response = await userApi.getUserProfileByUserName(testUser.username);
+            await statusValidations.expectStatus(response, statusValidations.OK)
+            const body = await response.json();
+
+            userValidations.assertUserProfile(body.user);
+        });
+
+        test('filters user list by exact email match', async ({ userApi, statusValidations }) => {
+            const response = await userApi.getUserByEmail(testUser.email);
+
+            await statusValidations.expectStatus(response, statusValidations.OK)
+        });
+
+        test('filters user list by exact phone number match', async ({ userApi, statusValidations }) => {
+            const response = await userApi.getUserByEmail(testUser.phoneNumber);
+
+            await statusValidations.expectStatus(response, statusValidations.OK)
+        });
+
+        test('filters user list by exact username', async ({ userApi, statusValidations }) => {
+            const response = await userApi.getUserByEmail(testUser.username);
+
+            await statusValidations.expectStatus(response, statusValidations.OK)
+        });
+    }); 
     
-    test('GET /users/:id - returns error when non-existent id provided', async ({ userApi }) => {
-        const nonExistentId = '0000000';
+    test.describe('POST /users', () => {
 
-        const response = await userApi.getUserById(nonExistentId);
-        const body = await response.json();
+        test('registers a new user with valid credentials', async ({ userApi, statusValidations, userValidations }) => {
+            const userData = createdUserPayload();
 
-        expect(response.status()).toBe(401);
-        expect(body).toMatchObject({
-            error: expect.any(String) 
+            const response = await userApi.postNewUser(userData);
+            await statusValidations.expectStatus(response, statusValidations.CREATED);
+            const body = await response.json();
+
+            userValidations.assertCreatedUser(body.user, userData);
+        });
+
+        test('initializes a new account with a specific starting balance', async ({ userApi, statusValidations, userValidations }) => {
+            const userData = createdUserPayload({balance: 100_00});
+
+            const response = await userApi.postNewUser(userData);
+            const body = await response.json();
+
+            await statusValidations.expectStatus(response, statusValidations.CREATED);
+            userValidations.assertCreatedUser(body.user, userData);
         });
     });
 
-    test('GET /users/profile/:username - should return user profile by username', async ({ userApi, db, seedDatabase }) => {
-        const userInDb = await db.find('users', {});
-        
-        const response = await userApi.getUserProfileByUserName(userInDb.username);
-        const body = await response.json();
+    test.describe('PATCH /users', () => {
 
-        expect(response.status()).toBe(200);
-        assertUserProfile(body.user);
-    })
+        test('partially updates user profile fields (firstName)', async ({ userApi, statusValidations }) => {
+            const firstName = {
+                firstName: "Test"
+            };
 
-    test('GET /users/search by email', async ({ userApi, db, seedDatabase }) => {
-        const usersInDb = await db.find('users', {});
-        
-    })
-})
+            const response = await userApi.patchUser(testUser.id, firstName);
+
+            await statusValidations.expectStatus(response, statusValidations.NO_CONTENT);
+        });
+
+        test('rejects update requests containing schema-violating fields', async ({ userApi, statusValidations }) => {
+            const userData = {
+                notAUserField: "not a user field"
+            };
+
+            const response = await userApi.patchUser(testUser.id, userData);
+
+            await statusValidations.expectStatus(response, statusValidations.INVALID_DATA);
+            await statusValidations.expectError(response);
+        });
+    });

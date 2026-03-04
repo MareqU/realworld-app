@@ -1,10 +1,10 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
-import { test } from "../../fixtures";
 
 export class UserApi {
     private readonly request: APIRequestContext;
-    private readonly endpoint = '/users';
-    private readonly profile = '/profile/';
+    public readonly users = '/users';
+    public readonly profile = '/profile/';
+    public readonly search = '/search';
 
     constructor(request: APIRequestContext) {
         this.request = request
@@ -12,17 +12,37 @@ export class UserApi {
 
     // Method to fetch all users
     async getAllUsers(): Promise<APIResponse> {
-        return await this.request.get(this.endpoint);
+        return this.request.get(this.users);
     }
 
     // Method to fetch a specific user by ID
     async getUserById(userId: string): Promise<APIResponse> {
-        return await this.request.get(`${this.endpoint}/${userId}`);
+        return this.request.get(`${this.users}/${userId}`);
     }
 
     // Method to fetch a specific profile by username
     async getUserProfileByUserName(username: string): Promise<APIResponse> {
-        return await this.request.get(`${this.endpoint}${this.profile}${username}`);
+        return this.request.get(`${this.users}${this.profile}${username}`);
+    }
+
+    async getUserByEmail(email: string): Promise<APIResponse> {
+        return this.request.get(`${this.users}${this.search}`, {
+            params: {
+                q: email
+            }
+        })
+    }
+
+    async postNewUser(userData: Object): Promise<APIResponse> {
+        return this.request.post(this.users, {
+            data: userData
+        })
+    }
+
+    async patchUser(userId: string, newField: Object): Promise<APIResponse> {
+        return this.request.patch(`${this.users}/${userId}`, {
+            data: newField
+        });
     }
     
 }
