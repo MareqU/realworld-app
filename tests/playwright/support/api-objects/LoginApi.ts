@@ -14,8 +14,8 @@ export class LoginApi {
         return this.request.post(this.login, {
             // Only temporary solution, It would be taken from .env
             data: {
-                username: 'Heath93',
-                password: 's3cret' 
+                username: process.env.TEST_USER,
+                password: process.env.TEST_PASS
             }
         });
     }

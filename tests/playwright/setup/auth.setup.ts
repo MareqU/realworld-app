@@ -5,10 +5,9 @@ const authFile = path.join(__dirname, '../.auth/user.json');
 
 setup('authenticate', async ({ request, db, seedDatabase, baseURL, statusValidations}) => {
     const response = await request.post(`/login`, {
-        // Only temporary solution, it would be taken from .env
         data: {
-            username: 'Heath93',
-            password: 's3cret'
+            username: process.env.TEST_USER,
+            password: process.env.TEST_PASS
         }
     })
 
