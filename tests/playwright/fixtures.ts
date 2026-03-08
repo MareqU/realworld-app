@@ -2,9 +2,19 @@ import { test as base } from '@playwright/test';
 import { UserApi } from './support/api-objects/UserApi';
 import { LoginApi } from './support/api-objects/LoginApi';
 import { TransactionsApi } from './support/api-objects/Transactions.Api';
+import { NotificationsApi } from './support/api-objects/NotificationsApi';
+import { LikesApi } from './support/api-objects/LikesApi';
+import { ContactsApi } from './support/api-objects/ContactsApi';
+import { CommentsApi } from './support/api-objects/CommentsApi';
+import { BankTransfersApi } from './support/api-objects/BankTransfersApi';
+import { BankAccountsApi } from './support/api-objects/BankAccountsApi';
 import { UserValidations } from './support/validations/userValidations';
 import { StatusValidations } from './support/validations/statusValidations';
 import { TransactionValidations } from './support/validations/transactionValidations';
+import { ContactValidations } from './support/validations/contactValidations';
+import { CommentValidations } from './support/validations/commentValidations';
+import { BankTransferValidations } from './support/validations/bankTransferValidations';
+import { BankAccountValidations } from './support/validations/bankAccountValidations';
 import fs from 'fs';
 import path from 'path';
 
@@ -18,12 +28,22 @@ type fixtures = {
     // API objects
     userApi: UserApi;
     loginApi: LoginApi;
-    transactionsApi: TransactionsApi
+    transactionsApi: TransactionsApi;
+    notificationsApi: NotificationsApi;
+    likesApi: LikesApi;
+    contactsApi: ContactsApi;
+    commentsApi: CommentsApi;
+    bankTransfersApi: BankTransfersApi;
+    bankAccountsApi: BankAccountsApi;
 
     // Validations
     statusValidations: StatusValidations;
     userValidations: UserValidations;
     transactionValidations: TransactionValidations;
+    contactValidations: ContactValidations;
+    commentValidations: CommentValidations;
+    bankTransferValidations: BankTransferValidations;
+    bankAccountValidations: BankAccountValidations;
 
 };
 
@@ -77,6 +97,18 @@ export const test = base.extend<fixtures>({
         await use(new TransactionsApi(request));
     },
 
+    notificationsApi: async({ request }, use) => {
+        await use(new NotificationsApi(request));
+    },
+
+    likesApi: async({ request }, use) => {
+        await use(new LikesApi(request));
+    },
+
+    contactsApi: async({ request }, use) => {
+        await use(new ContactsApi(request));
+    },
+
     // Validations
     statusValidations: async({}, use) => {
         await use(new StatusValidations());
@@ -88,7 +120,35 @@ export const test = base.extend<fixtures>({
 
     transactionValidations: async({}, use) => {
         await use(new TransactionValidations());
-    },    
+    },
+
+    contactValidations: async({}, use) => {
+        await use(new ContactValidations());
+    },
+
+    commentsApi: async({ request }, use) => {
+        await use(new CommentsApi(request));
+    },
+
+    commentValidations: async({}, use) => {
+        await use(new CommentValidations());
+    },
+
+    bankTransfersApi: async({ request }, use) => {
+        await use(new BankTransfersApi(request));
+    },
+
+    bankTransferValidations: async({}, use) => {
+        await use(new BankTransferValidations());
+    },
+
+    bankAccountsApi: async({ request }, use) => {
+        await use(new BankAccountsApi(request));
+    },
+
+    bankAccountValidations: async({}, use) => {
+        await use(new BankAccountValidations());
+    },
 })
 
 export { expect } from '@playwright/test'
