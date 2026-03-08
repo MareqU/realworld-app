@@ -1,5 +1,7 @@
 import { test, expect } from '../../fixtures';
 
+test.describe.configure({ mode: 'serial' });
+
 let transactionId: string;
 
 test.beforeAll(async ({ seedDatabase, db }) => {
