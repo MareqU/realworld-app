@@ -36,6 +36,9 @@ type fixtures = {
     bankTransfersApi: BankTransfersApi;
     bankAccountsApi: BankAccountsApi;
 
+    // POM
+    
+
     // Validations
     statusValidations: StatusValidations;
     userValidations: UserValidations;
@@ -49,10 +52,14 @@ type fixtures = {
 
 export const test = base.extend<fixtures>({
     
-    seedDatabase: async ({ request, baseURL }, use) => {
+    seedDatabase: async ({ request }, use) => {
+
+        const backendUrl = process.env.VITE_BACKEND_PORT
+            ? `http://localhost:${process.env.VITE_BACKEND_PORT}`
+            : 'http://localhost:3001';
 
         const seedAction = async () => {
-            const response = await request.post(`${baseURL}/testData/seed`);
+            const response = await request.post(`${backendUrl}/testData/seed`);
             if (!response.ok()) throw new Error('Seed failed!');
         };
 
