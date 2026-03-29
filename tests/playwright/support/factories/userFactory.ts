@@ -10,7 +10,7 @@ export const createdUserPayload = (overrides?: Partial<User>): Partial<User> => 
         password: 's3cret_password',
         email: faker.internet.email(),
         phoneNumber: faker.phone.number(),
-        avatar: faker.image.avatar(),
+        avatar: `https://avatars.dicebear.com/api/human/${faker.string.alphanumeric(9)}.svg`,
         ...overrides,
     }
 }
