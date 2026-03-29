@@ -1,14 +1,27 @@
 import { test, expect } from '../../fixtures';
+import { createBankAccountPayload } from '../../support/factories/bankAccountFactory';
+import { createPaymentPayload } from '../../support/factories/transactionFactory';
+import { createdUserPayload } from '../../support/factories/userFactory';
 
 test.describe.configure({ mode: 'serial' });
 
 let transactionId: string;
 
-test.beforeAll(async ({ seedDatabase, db }) => {
-    await seedDatabase();
+test.beforeAll(async ({ bankAccountsApi, userApi, transactionsApi, commentsApi }) => {
+    const baRes = await bankAccountsApi.createBankAccount(createBankAccountPayload());
+    const { account } = await baRes.json();
 
-    const comment = db.find('comments', {});
-    transactionId = comment.transactionId;
+    const receiverRes = await userApi.postNewUser(createdUserPayload());
+    const { user: receiver } = await receiverRes.json();
+
+    const txRes = await transactionsApi.createTransaction(createPaymentPayload({
+        source: account.id,
+        receiverId: receiver.id,
+    }));
+    const { transaction } = await txRes.json();
+    transactionId = transaction.id;
+
+    await commentsApi.createComment(transactionId, 'Initial comment for test');
 });
 
 test.describe('GET /comments/:transactionId', () => {

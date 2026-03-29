@@ -1,19 +1,30 @@
 import { test, expect } from '../../fixtures';
 import { User } from '../../../../src/models/user';
 import { createPaymentPayload, createRequestPayload } from '../../support/factories/transactionFactory';
+import { createBankAccountPayload } from '../../support/factories/bankAccountFactory';
+import { createdUserPayload } from '../../support/factories/userFactory';
 
 let testUser: User;
 let receiver: User;
 let bankAccountId: string;
 let transactionId: string;
 
-test.beforeAll(async ({ db }) => {
-    const users = db.filter('users', {});
-    testUser = users[0];
-    receiver = users[1];
-    const bankAccount = db.find('bankaccounts', { userId: testUser.id });
-    bankAccountId = bankAccount.id;
-    const transaction = db.find('transactions', { senderId: testUser.id });
+test.beforeAll(async ({ currentUser, userApi, bankAccountsApi, transactionsApi }) => {
+    testUser = currentUser;
+
+    const receiverRes = await userApi.postNewUser(createdUserPayload());
+    const { user } = await receiverRes.json();
+    receiver = user;
+
+    const baRes = await bankAccountsApi.createBankAccount(createBankAccountPayload());
+    const { account } = await baRes.json();
+    bankAccountId = account.id;
+
+    const txRes = await transactionsApi.createTransaction(createRequestPayload({
+        source: bankAccountId,
+        receiverId: receiver.id,
+    }));
+    const { transaction } = await txRes.json();
     transactionId = transaction.id;
 });
 

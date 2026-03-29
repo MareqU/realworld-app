@@ -7,14 +7,12 @@ test.describe.configure({ mode: 'serial' });
 let authenticatedUser: User;
 let bankAccount: BankAccount;
 
-test.beforeAll(async ({ seedDatabase, db }) => {
-    await seedDatabase();
+test.beforeAll(async ({ currentUser, bankAccountsApi }) => {
+    authenticatedUser = currentUser;
 
-    const users = db.filter('users', {});
-    authenticatedUser = users[0];
-
-    const accounts = db.filter('bankaccounts', {});
-    bankAccount = accounts[0];
+    const res = await bankAccountsApi.createBankAccount(createBankAccountPayload());
+    const body = await res.json();
+    bankAccount = body.account;
 });
 
 test.describe('GET /bankAccounts', () => {

@@ -4,8 +4,8 @@ import { createdUserPayload } from '../../support/factories/userFactory';
 
     let testUser: User
 
-    test.beforeAll(async ({ seedDatabase, db }) => {
-        testUser = await db.find('users', {}); 
+    test.beforeAll(async ({ currentUser }) => {
+        testUser = currentUser;
     });
 
     test.describe('GET /users', () => {

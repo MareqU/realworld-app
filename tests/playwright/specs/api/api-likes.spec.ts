@@ -1,12 +1,25 @@
 import { test, expect } from '../../fixtures';
+import { createBankAccountPayload } from '../../support/factories/bankAccountFactory';
+import { createPaymentPayload } from '../../support/factories/transactionFactory';
+import { createdUserPayload } from '../../support/factories/userFactory';
 
 let transactionId: string;
 
-test.beforeAll(async ({ seedDatabase, db }) => {
-    await seedDatabase();
+test.beforeAll(async ({ bankAccountsApi, userApi, transactionsApi, likesApi }) => {
+    const baRes = await bankAccountsApi.createBankAccount(createBankAccountPayload());
+    const { account } = await baRes.json();
 
-    const like = db.find('likes', {});
-    transactionId = like.transactionId;
+    const receiverRes = await userApi.postNewUser(createdUserPayload());
+    const { user: receiver } = await receiverRes.json();
+
+    const txRes = await transactionsApi.createTransaction(createPaymentPayload({
+        source: account.id,
+        receiverId: receiver.id,
+    }));
+    const { transaction } = await txRes.json();
+    transactionId = transaction.id;
+
+    await likesApi.createLike(transactionId);
 });
 
 test.describe('GET /likes/:transactionId', () => {

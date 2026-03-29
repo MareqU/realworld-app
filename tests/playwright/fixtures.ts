@@ -20,6 +20,7 @@ import path from 'path';
 
 type fixtures = {
     seedDatabase: () => Promise<void>,
+    currentUser: any,
     db: {
         find: (entity: string, attrs: object) => any;
         filter: (entity: string, attrs: object) => any[];
@@ -64,6 +65,12 @@ export const test = base.extend<fixtures>({
         };
 
         await use(seedAction);
+    },
+
+    currentUser: async ({}, use: (user: any) => Promise<void>) => {
+        const userDataFile = path.join(__dirname, '.auth/userData.json');
+        const user = JSON.parse(fs.readFileSync(userDataFile, 'utf-8'));
+        await use(user);
     },
 
     db: async({}, use) => {

@@ -1,12 +1,24 @@
 import { test } from '../../fixtures';
 import { User } from '../../../../src/models';
+import { createBankAccountPayload } from '../../support/factories/bankAccountFactory';
+import { createPaymentPayload } from '../../support/factories/transactionFactory';
+import { createdUserPayload } from '../../support/factories/userFactory';
 
 let authenticatedUser: User;
 
-test.beforeAll(async ({ seedDatabase, db }) => {
-    await seedDatabase();
+test.beforeAll(async ({ currentUser, bankAccountsApi, userApi, transactionsApi }) => {
+    authenticatedUser = currentUser;
 
-    authenticatedUser = db.find('users', {});
+    const baRes = await bankAccountsApi.createBankAccount(createBankAccountPayload());
+    const { account } = await baRes.json();
+
+    const receiverRes = await userApi.postNewUser(createdUserPayload());
+    const { user: receiver } = await receiverRes.json();
+
+    await transactionsApi.createTransaction(createPaymentPayload({
+        source: account.id,
+        receiverId: receiver.id,
+    }));
 });
 
 test.describe('GET /bankTransfers', () => {

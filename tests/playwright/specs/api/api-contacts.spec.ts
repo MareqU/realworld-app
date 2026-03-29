@@ -1,18 +1,26 @@
 import { test, expect } from '../../fixtures';
 import { User, Contact } from '../../../../src/models';
+import { createdUserPayload } from '../../support/factories/userFactory';
 
 test.describe.configure({ mode: 'serial' });
 
 let authenticatedUser: User;
 let contact: Contact;
+let secondContactUserId: string;
 
-test.beforeAll(async ({ seedDatabase, db }) => {
-    await seedDatabase();
+test.beforeAll(async ({ currentUser, userApi, contactsApi }) => {
+    authenticatedUser = currentUser;
 
-    const users = db.filter('users', {});
-    authenticatedUser = users[0];
+    const userRes = await userApi.postNewUser(createdUserPayload());
+    const { user: contactUser } = await userRes.json();
 
-    contact = db.find('contacts', {});
+    const contactRes = await contactsApi.createContact(contactUser.id);
+    const { contact: createdContact } = await contactRes.json();
+    contact = createdContact;
+
+    const userRes2 = await userApi.postNewUser(createdUserPayload());
+    const { user: secondUser } = await userRes2.json();
+    secondContactUserId = secondUser.id;
 });
 
 test.describe('GET /contacts/:username', () => {
@@ -30,7 +38,7 @@ test.describe('GET /contacts/:username', () => {
 test.describe('POST /contacts', () => {
 
     test('creates a new contact', async ({ statusValidations, contactsApi, contactValidations }) => {
-        const response = await contactsApi.createContact(contact.id);
+        const response = await contactsApi.createContact(secondContactUserId);
         await statusValidations.expectStatus(response, statusValidations.OK);
 
         const body = await response.json();

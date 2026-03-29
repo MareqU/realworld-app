@@ -1,4 +1,7 @@
 import { test, expect } from '../../fixtures';
+import { createBankAccountPayload } from '../../support/factories/bankAccountFactory';
+import { createPaymentPayload } from '../../support/factories/transactionFactory';
+import { createdUserPayload } from '../../support/factories/userFactory';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -7,20 +10,31 @@ let notificationId: string;
 let likeTransactionId: string;
 let commentTransactionId: string;
 
-test.beforeAll(async ({ seedDatabase, db }) => {
-    await seedDatabase();
+test.beforeAll(async ({ bankAccountsApi, userApi, transactionsApi, likesApi, commentsApi, notificationsApi }) => {
+    const baRes = await bankAccountsApi.createBankAccount(createBankAccountPayload());
+    const { account } = await baRes.json();
 
-    const transaction = db.find('transactions', {});
+    const receiverRes = await userApi.postNewUser(createdUserPayload());
+    const { user: receiver } = await receiverRes.json();
+
+    const txRes = await transactionsApi.createTransaction(createPaymentPayload({
+        source: account.id,
+        receiverId: receiver.id,
+    }));
+    const { transaction } = await txRes.json();
     transactionId = transaction.id;
 
-    const notification = db.find('notifications', {});
-    notificationId = notification.id;
+    await likesApi.createLike(transactionId);
+    likeTransactionId = transactionId;
 
-    const like = db.find('likes', {});
-    likeTransactionId = like.transactionId;
+    await commentsApi.createComment(transactionId, 'Initial comment for notification test');
+    commentTransactionId = transactionId;
 
-    const comment = db.find('comments', {});
-    commentTransactionId = comment.transactionId;
+    const notifRes = await notificationsApi.createBulkNotifications([
+        { type: 'payment', transactionId, status: 'received' },
+    ]);
+    const { results } = await notifRes.json();
+    notificationId = results[0].id;
 });
 
 test.describe('GET /notifications', () => {
