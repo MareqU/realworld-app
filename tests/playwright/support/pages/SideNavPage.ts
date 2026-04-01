@@ -5,11 +5,15 @@ export class SideNavPage {
 
     readonly toggleButton: Locator;
     readonly signOutButton: Locator;
+    readonly bankAccounts: Locator;
+    readonly notificationsCount: Locator;
 
     constructor(page: Page) {
         this.page = page;
         this.toggleButton = page.getByTestId('sidenav-toggle');
         this.signOutButton = page.getByTestId('sidenav-signout');
+        this.bankAccounts = page.getByTestId('sidenav-bankaccounts');
+        this.notificationsCount = page.getByTestId('nav-top-notifications-count');
     }
 
     async signOut() {

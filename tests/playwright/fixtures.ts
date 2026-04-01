@@ -1,4 +1,5 @@
 import { test as base } from '@playwright/test';
+// API objects
 import { UserApi } from './support/api-objects/UserApi';
 import { LoginApi } from './support/api-objects/LoginApi';
 import { TransactionsApi } from './support/api-objects/Transactions.Api';
@@ -8,6 +9,8 @@ import { ContactsApi } from './support/api-objects/ContactsApi';
 import { CommentsApi } from './support/api-objects/CommentsApi';
 import { BankTransfersApi } from './support/api-objects/BankTransfersApi';
 import { BankAccountsApi } from './support/api-objects/BankAccountsApi';
+
+// Validations
 import { UserValidations } from './support/validations/userValidations';
 import { StatusValidations } from './support/validations/statusValidations';
 import { TransactionValidations } from './support/validations/transactionValidations';
@@ -15,6 +18,14 @@ import { ContactValidations } from './support/validations/contactValidations';
 import { CommentValidations } from './support/validations/commentValidations';
 import { BankTransferValidations } from './support/validations/bankTransferValidations';
 import { BankAccountValidations } from './support/validations/bankAccountValidations';
+
+// POM
+import { SignInPage } from './support/pages/SignInPage';
+import { SignUpPage } from './support/pages/SignUpPage';
+import { OnboardingPage } from './support/pages/OnboardingPage';
+import { SideNavPage } from './support/pages/SideNavPage';
+import { BankAccountsPage } from './support/pages/BankAccountsPage';
+
 import fs from 'fs';
 import path from 'path';
 
@@ -38,7 +49,11 @@ type fixtures = {
     bankAccountsApi: BankAccountsApi;
 
     // POM
-    
+    signInPage: SignInPage;
+    signUpPage: SignUpPage;
+    onboardingPage: OnboardingPage;
+    sideNav:  SideNavPage;
+    bankAccountsPage: BankAccountsPage;
 
     // Validations
     statusValidations: StatusValidations;
@@ -55,9 +70,7 @@ export const test = base.extend<fixtures>({
     
     seedDatabase: async ({ request }, use) => {
 
-        const backendUrl = process.env.VITE_BACKEND_PORT
-            ? `http://localhost:${process.env.VITE_BACKEND_PORT}`
-            : 'http://localhost:3001';
+        const backendUrl = process.env.VITE_BACKEND_URL ?? 'http://localhost:3001';
 
         const seedAction = async () => {
             const response = await request.post(`${backendUrl}/testData/seed`);
@@ -123,6 +136,19 @@ export const test = base.extend<fixtures>({
         await use(new ContactsApi(request));
     },
 
+    bankAccountsApi: async({ request }, use) => {
+        await use(new BankAccountsApi(request));
+    },
+
+    bankTransfersApi: async({ request }, use) => {
+        await use(new BankTransfersApi(request));
+    },
+
+    commentsApi: async({ request }, use) => {
+        await use(new CommentsApi(request));
+    },
+
+
     // Validations
     statusValidations: async({}, use) => {
         await use(new StatusValidations());
@@ -140,29 +166,41 @@ export const test = base.extend<fixtures>({
         await use(new ContactValidations());
     },
 
-    commentsApi: async({ request }, use) => {
-        await use(new CommentsApi(request));
-    },
-
     commentValidations: async({}, use) => {
         await use(new CommentValidations());
     },
 
-    bankTransfersApi: async({ request }, use) => {
-        await use(new BankTransfersApi(request));
-    },
-
+    
     bankTransferValidations: async({}, use) => {
         await use(new BankTransferValidations());
     },
 
-    bankAccountsApi: async({ request }, use) => {
-        await use(new BankAccountsApi(request));
-    },
+    
 
     bankAccountValidations: async({}, use) => {
         await use(new BankAccountValidations());
     },
+
+    // POM
+    signInPage: async({ page }, use) => {
+        await use(new SignInPage(page))
+    },
+
+    signUpPage: async({ page }, use) => {
+        await use(new SignUpPage(page))
+    },
+
+    onboardingPage: async({ page }, use) => {
+        await use(new OnboardingPage(page))
+    },
+
+    sideNav: async({ page }, use) => {
+        await use(new SideNavPage(page))
+    },
+
+    bankAccountsPage: async({ page }, use) => {
+        await use(new BankAccountsPage(page))
+    }
 })
 
 export { expect } from '@playwright/test'
