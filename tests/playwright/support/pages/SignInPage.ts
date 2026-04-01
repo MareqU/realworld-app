@@ -24,7 +24,7 @@ export class SignInPage {
         await this.page.goto('/signin');
     }
 
-    async login(username: string, password: string) {
+    async login(username: any, password: any) {
         await this.goto();
         await this.usernameInput.fill(username);
         await this.passwordInput.fill(password);
