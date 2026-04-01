@@ -9,7 +9,7 @@ export class UserValidations {
      * Specific assertion for the POST /users response.
      * Only validates fields returned immediately upon creation.
      */
-    async assertCreatedUser(user: Partial<User>, expectedData: Partial<User>) {
+    assertCreatedUser(user: Partial<User>, expectedData: Partial<User>) {
         expect(user, 'Created user should match the sent payload').toMatchObject({
             id: expect.any(String),
             uuid: expect.any(String),
@@ -25,7 +25,7 @@ export class UserValidations {
      * Full assertion for GET /users/:id or list responses.
      * Validates the complete schema including database defaults.
      */
-    async assertValidUser(user: User) {
+    assertValidUser(user: User) {
         expect(user, 'Full user object should match complete schema').toMatchObject({
             id: expect.any(String),
             uuid: expect.any(String),
@@ -44,7 +44,7 @@ export class UserValidations {
     }
 
     // Assertion for /profile/:username
-    async assertUserProfile(profile: Partial<User>) {
+    assertUserProfile(profile: Partial<User>) {
         expect(profile, 'Profile should not contain sensitive fields').not.toHaveProperty('password');
         expect(profile, 'Profile object should match public schema').toMatchObject({
             firstName: expect.any(String),
@@ -53,7 +53,7 @@ export class UserValidations {
         });
     }
 
-    async expectLoginCookie(response: APIResponse) {
+    expectLoginCookie(response: APIResponse) {
         const headers = response.headers();
         const setCookie = headers['set-cookie'];
 
