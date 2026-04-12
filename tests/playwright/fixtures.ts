@@ -11,13 +11,15 @@ import { BankTransfersApi } from './support/api-objects/BankTransfersApi';
 import { BankAccountsApi } from './support/api-objects/BankAccountsApi';
 
 // Validations
-import { UserValidations } from './support/validations/userValidations';
-import { StatusValidations } from './support/validations/statusValidations';
-import { TransactionValidations } from './support/validations/transactionValidations';
-import { ContactValidations } from './support/validations/contactValidations';
-import { CommentValidations } from './support/validations/commentValidations';
-import { BankTransferValidations } from './support/validations/bankTransferValidations';
-import { BankAccountValidations } from './support/validations/bankAccountValidations';
+import { UserValidations } from './support/validations/api/userValidations';
+import { StatusValidations } from './support/validations/api/statusValidations';
+import { TransactionValidations } from './support/validations/api/transactionValidations';
+import { ContactValidations } from './support/validations/api/contactValidations';
+import { CommentValidations } from './support/validations/api/commentValidations';
+import { BankTransferValidations } from './support/validations/api/bankTransferValidations';
+import { BankAccountValidations } from './support/validations/api/bankAccountValidations';
+import { BankAccountsValidations } from './support/validations/ui/bankAccountsValidations';
+import { AuthValidations } from './support/validations/ui/authValidations';
 
 // POM
 import { SignInPage } from './support/pages/SignInPage';
@@ -63,6 +65,8 @@ type fixtures = {
     commentValidations: CommentValidations;
     bankTransferValidations: BankTransferValidations;
     bankAccountValidations: BankAccountValidations;
+    bankAccountsValidations: BankAccountsValidations;
+    authValidations: AuthValidations;
 
 };
 
@@ -175,10 +179,17 @@ export const test = base.extend<fixtures>({
         await use(new BankTransferValidations());
     },
 
-    
-
     bankAccountValidations: async({}, use) => {
         await use(new BankAccountValidations());
+    },
+
+    // UI validations
+    bankAccountsValidations: async({ bankAccountsPage }, use) => {
+        await use(new BankAccountsValidations(bankAccountsPage));
+    },
+
+    authValidations: async({ signInPage, signUpPage }, use) => {
+        await use(new AuthValidations(signInPage, signUpPage));
     },
 
     // POM
