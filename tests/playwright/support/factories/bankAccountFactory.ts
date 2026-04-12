@@ -8,9 +8,9 @@ type BankAccountPayload = {
 
 export const createBankAccountPayload = (overrides?: Partial<BankAccountPayload>): BankAccountPayload => {
     return {
-        bankName: `${faker.company.name()} Bank`,
-        accountNumber: faker.finance.accountNumber(10),
-        routingNumber: faker.finance.accountNumber(9),
+        bankName: `${faker.company.companyName()} Bank`,
+        accountNumber: faker.finance.account(10),
+        routingNumber: faker.finance.account(9),
         ...overrides,
     };
 };

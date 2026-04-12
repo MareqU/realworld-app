@@ -4,13 +4,13 @@ import { faker } from '@faker-js/faker';
 
 export const createdUserPayload = (overrides?: Partial<User>): Partial<User> => {
     return {
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
-        username: faker.internet.username(),
+        firstName: faker.name.firstName(),
+        lastName: faker.name.lastName(),
+        username: faker.internet.userName(),
         password: 's3cret_password',
         email: faker.internet.email(),
-        phoneNumber: faker.phone.number(),
-        avatar: `https://avatars.dicebear.com/api/human/${faker.string.alphanumeric(9)}.svg`,
+        phoneNumber: faker.phone.phoneNumber(),
+        avatar: `https://avatars.dicebear.com/api/human/${faker.random.alphaNumeric(9)}.svg`,
         ...overrides,
     }
 }

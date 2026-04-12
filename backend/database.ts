@@ -366,7 +366,7 @@ export const formatTransactionsForApiResponse = (
   transactions: Transaction[]
 ): TransactionResponseItem[] =>
   orderBy(
-    [(transaction: Transaction) => new Date(transaction.modifiedAt)],
+    [(transaction: TransactionResponseItem) => new Date(transaction.modifiedAt)],
     ["desc"],
     transactions.map((transaction) => formatTransactionForApiResponse(transaction))
   );
@@ -694,7 +694,7 @@ const saveComment = (comment: Comment): Comment => {
 export const getNotificationBy = (key: string, value: any): NotificationType =>
   getBy(NOTIFICATION_TABLE, key, value);
 
-export const getNotificationsByObj = (query: object): Notification[] =>
+export const getNotificationsByObj = (query: object): NotificationType[] =>
   getAllByObj(NOTIFICATION_TABLE, query);
 
 export const getUnreadNotificationsByUserId = (userId: string) =>
