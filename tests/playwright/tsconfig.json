@@ -3,17 +3,11 @@
     "target": "ES2020",
     "module": "CommonJS",
     "lib": ["esnext"],
-    "paths": {
-      "src/*": ["./src/*"]
-    },
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "allowJs": true,
-    "noEmit": true,
     "strict": false,
     "noImplicitAny": false,
-    "types": ["node"],
-    
+    "types": ["node", "@playwright/test"]
   },
-  "include": ["backend/**/*.ts", "scripts/**/*.ts"]
+  "include": ["./**/*.ts"]
 }
