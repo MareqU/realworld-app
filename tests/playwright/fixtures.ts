@@ -84,7 +84,7 @@ export const test = base.extend<fixtures>({
         await use(seedAction);
     },
 
-    currentUser: async (_, use: (user: any) => Promise<void>) => {
+    currentUser: async ({}, use: (user: any) => Promise<void>) => {
         const userDataFile = path.join(__dirname, '.auth/userData.json');
         const user = JSON.parse(fs.readFileSync(userDataFile, 'utf-8'));
         await use(user);

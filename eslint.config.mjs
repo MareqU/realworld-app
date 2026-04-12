@@ -16,6 +16,7 @@ export default defineConfig([
     rules: {
       // TODO: review violations of disabled rules
       'no-empty': 'off',
+      'no-empty-pattern': 'off',
       'no-prototype-builtins': 'off',
       'no-undef': 'off',
       'no-unused-vars': 'off',
