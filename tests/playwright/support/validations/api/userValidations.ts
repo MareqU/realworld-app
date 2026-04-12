@@ -1,6 +1,6 @@
 // support/assertions/UserAssertions.ts
 import { APIRequest, APIResponse, expect } from '@playwright/test';
-import { User } from '../../../../src/models/user';
+import { User } from '../../../../../src/models/user';
 import { head } from 'lodash';
 
 export class UserValidations {
