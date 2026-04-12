@@ -42,6 +42,18 @@ export class BankAccountsPage {
         await this.page.goto('/bankaccounts');
     }
 
+    async gotoNewForm() {
+        await this.goto();
+        await this.newButton.click();
+    }
+
+    async createBankAccount(bankName: string, routingNumber: string, accountNumber: string) {
+        await this.bankNameInput.fill(bankName);
+        await this.routingNumberInput.fill(routingNumber);
+        await this.accountNumberInput.fill(accountNumber);
+        await this.submitButton.click();
+    }
+
     async interceptEmptyBankAccounts() {
         await this.page.route('**/graphql', async (route) => {
             const postData = route.request().postDataJSON();
