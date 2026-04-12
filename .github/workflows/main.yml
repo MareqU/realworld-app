@@ -41,6 +41,13 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium
 
+      - name: Debug Environment Variables
+        run: |
+          echo "Checking Base URL configuration..."
+          echo "APP_URL is set to: $VITE_BACKEND_PORT"
+          
+          echo "Current Working Directory: $(pwd)"
+
       - name: Run Playwright tests
         run: npx playwright test
 
