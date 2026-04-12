@@ -113,6 +113,7 @@ export default defineConfig({
   webServer: {
     command: 'yarn dev',
     url: 'http://localhost:3000',
+    cwd: path.resolve(__dirname, '../..'),
     reuseExistingServer: !process.env.CI,
   },
 });

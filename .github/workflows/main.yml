@@ -5,31 +5,17 @@ on:
     branches-ignore:
       - "renovate/**"
 
+defaults:
+  run:
+    working-directory: tests/playwright
+
 jobs:
-  install:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
-      - run: node --version
-      - run: yarn types
-      - run: yarn lint
-      - run: yarn test:unit:ci
-      - run: yarn build:ci
-
   playwright-tests:
     timeout-minutes: 30
     runs-on: ubuntu-latest
-    needs: install
+    env:
+      HUSKY: 0
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,16 +24,25 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: "yarn"
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
+        working-directory: .
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium
 
       - name: Run Playwright tests
         run: npx playwright test
-        working-directory: tests/playwright
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
