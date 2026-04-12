@@ -26,7 +26,7 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  workers: process.env.CI ? 1 : 4,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -71,8 +71,8 @@ export default defineConfig({
       testMatch: '**/*.spec.ts',
       use: { 
         ...devices['Desktop Chrome'],
-        baseURL: process.env.VITE_FRONTEND_PORT
-        ? `http://localhost:${process.env.VITE_FRONTEND_PORT}`
+        baseURL: process.env.PORT
+        ? `http://localhost:${process.env.PORT}`
         : 'http://localhost:3000',
         storageState: STORAGE_STATE
       },
