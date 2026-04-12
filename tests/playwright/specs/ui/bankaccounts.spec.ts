@@ -12,107 +12,95 @@ test.describe('Bank Accounts', () => {
     });
     
 
-    test('creates a new bank account', async ({ page, bankAccountsPage }) => {
+    test('creates a new bank account', async ({ page, bankAccountsPage, bankAccountsValidations, sideNav }) => {
 
         await page.goto('/');
-        await page.getByTestId('sidenav-bankaccounts').click();
+        //await page.getByTestId('sidenav-bankaccounts').click();
+        await sideNav.bankAccounts.click();
 
         await bankAccountsPage.newButton.click();
         await expect(page).toHaveURL('/bankaccounts/new');
 
-        await bankAccountsPage.bankNameInput.fill('The Best Bank');
-        await bankAccountsPage.routingNumberInput.fill('987654321');
-        await bankAccountsPage.accountNumberInput.fill('123456789');
-        await bankAccountsPage.submitButton.click();
+        await bankAccountsPage.createBankAccount('The Best Bank', '987654321', '123456789');
 
-        await expect(bankAccountsPage.listItems).toHaveCount(2);
-        await expect(bankAccountsPage.listItems.nth(1)).toContainText('The Best Bank');
+        await bankAccountsValidations.expectBankAccountCreated('The Best Bank', 2);
     });
 
-    test('should display bank account form errors', async ({ page, bankAccountsPage }) => {
+    test('should display bank account form errors', async ({ bankAccountsPage, bankAccountsValidations }) => {
 
-        await bankAccountsPage.goto();
-        await bankAccountsPage.newButton.click();
+        await bankAccountsPage.gotoNewForm();
 
         // Bank name - required
         await bankAccountsPage.bankNameInput.fill('The');
         await bankAccountsPage.bankNameInput.clear();
         await bankAccountsPage.bankNameInput.blur();
-        await expect(bankAccountsPage.bankNameError).toBeVisible();
-        await expect(bankAccountsPage.bankNameError).toContainText('Enter a bank name');
+        await bankAccountsValidations.expectBankNameRequired();
 
         // Bank name - min 5 characters
         await bankAccountsPage.bankNameInput.fill('The');
         await bankAccountsPage.bankNameInput.blur();
-        await expect(bankAccountsPage.bankNameError).toBeVisible();
-        await expect(bankAccountsPage.bankNameError).toContainText('Must contain at least 5 characters');
+        await bankAccountsValidations.expectBankNameTooShort();
 
         // Routing number - required
         await bankAccountsPage.routingNumberInput.focus();
         await bankAccountsPage.routingNumberInput.blur();
-        await expect(bankAccountsPage.routingNumberError).toBeVisible();
-        await expect(bankAccountsPage.routingNumberError).toContainText('Enter a valid bank routing number');
+        await bankAccountsValidations.expectRoutingNumberRequired();
 
         // Routing number - min 9 digits
         await bankAccountsPage.routingNumberInput.fill('12345678');
         await bankAccountsPage.routingNumberInput.blur();
-        await expect(bankAccountsPage.routingNumberError).toBeVisible();
-        await expect(bankAccountsPage.routingNumberError).toContainText('Must contain a valid routing number');
+        await bankAccountsValidations.expectRoutingNumberTooShort();
 
         // Routing number - valid clears error
         await bankAccountsPage.routingNumberInput.clear();
         await bankAccountsPage.routingNumberInput.fill('123456789');
         await bankAccountsPage.routingNumberInput.blur();
-        await expect(bankAccountsPage.routingNumberError).not.toBeAttached();
+        await bankAccountsValidations.expectRoutingNumberErrorCleared();
 
         // Account number - required
         await bankAccountsPage.accountNumberInput.focus();
         await bankAccountsPage.accountNumberInput.blur();
-        await expect(bankAccountsPage.accountNumberError).toBeVisible();
-        await expect(bankAccountsPage.accountNumberError).toContainText('Enter a valid bank account number');
+        await bankAccountsValidations.expectAccountNumberRequired();
 
         // Account number - min 9 digits
         await bankAccountsPage.accountNumberInput.fill('12345678');
         await bankAccountsPage.accountNumberInput.blur();
-        await expect(bankAccountsPage.accountNumberError).toBeVisible();
-        await expect(bankAccountsPage.accountNumberError).toContainText('Must contain at least 9 digits');
+        await bankAccountsValidations.expectAccountNumberTooShort();
 
         // Account number - valid 9 digits clears error
         await bankAccountsPage.accountNumberInput.clear();
         await bankAccountsPage.accountNumberInput.fill('123456789');
         await bankAccountsPage.accountNumberInput.blur();
-        await expect(bankAccountsPage.accountNumberError).not.toBeAttached();
+        await bankAccountsValidations.expectAccountNumberErrorCleared();
 
         // Account number - valid 12 digits clears error
         await bankAccountsPage.accountNumberInput.clear();
         await bankAccountsPage.accountNumberInput.fill('123456789111');
         await bankAccountsPage.accountNumberInput.blur();
-        await expect(bankAccountsPage.accountNumberError).not.toBeAttached();
+        await bankAccountsValidations.expectAccountNumberErrorCleared();
 
         // Account number - max 12 digits
         await bankAccountsPage.accountNumberInput.clear();
         await bankAccountsPage.accountNumberInput.fill('1234567891111');
         await bankAccountsPage.accountNumberInput.blur();
-        await expect(bankAccountsPage.accountNumberError).toBeVisible();
-        await expect(bankAccountsPage.accountNumberError).toContainText('Must contain no more than 12 digits');
+        await bankAccountsValidations.expectAccountNumberTooLong();
 
-        await expect(bankAccountsPage.submitButton).toBeDisabled();
+        await bankAccountsValidations.expectSubmitDisabled();
     });
 
-    test('soft deletes a bank account', async ({ page, bankAccountsPage }) => {
+    test('soft deletes a bank account', async ({ bankAccountsPage, bankAccountsValidations }) => {
 
         await bankAccountsPage.goto();
         await bankAccountsPage.deleteButton.first().click();
 
-        await expect(bankAccountsPage.listItems.first()).toContainText('Deleted');
+        await bankAccountsValidations.expectBankAccountDeleted();
     });
 
-    test('renders an empty bank account list state with onboarding modal', async ({ bankAccountsPage, onboardingPage, sideNav }) => {
+    test('renders an empty bank account list state with onboarding modal', async ({ bankAccountsPage, bankAccountsValidations, onboardingPage, sideNav }) => {
         await bankAccountsPage.interceptEmptyBankAccounts();
         await bankAccountsPage.goto();
 
-        await expect(bankAccountsPage.list).not.toBeAttached();
-        await expect(bankAccountsPage.emptyListHeader).toContainText('No Bank Accounts');
+        await bankAccountsValidations.expectEmptyState();
         await expect(onboardingPage.dialog).toBeVisible();
         await expect(sideNav.notificationsCount).toBeAttached();
     });
