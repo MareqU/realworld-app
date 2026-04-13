@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       HUSKY: 0
+      VITE_BACKEND_PORT: ${{ vars.VITE_BACKEND_PORT }}
 
     steps:
       - name: Checkout
