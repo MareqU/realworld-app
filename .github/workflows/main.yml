@@ -16,6 +16,9 @@ jobs:
     env:
       HUSKY: 0
       VITE_BACKEND_PORT: ${{ vars.VITE_BACKEND_PORT }}
+      PORT: ${{ vars.PORT }}
+      TEST_USER: ${{ secrets.TEST_USER }}
+      TEST_PASS: ${{ secrets.TEST_PASS }}
 
     steps:
       - name: Checkout
