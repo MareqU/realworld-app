@@ -15,6 +15,7 @@ setup('authenticate', async ({ request, statusValidations }) => {
 
     await statusValidations.expectStatus(response, statusValidations.OK);
     const body = await response.json();
+    fs.mkdirSync(path.dirname(userDataFile), { recursive: true });
     fs.writeFileSync(userDataFile, JSON.stringify(body.user));
     await request.storageState({ path: authFile });
 })
