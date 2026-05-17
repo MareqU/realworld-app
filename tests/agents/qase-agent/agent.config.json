@@ -1,0 +1,10 @@
+{
+  "target_url": "http://localhost:3000/",
+  "qase_api_token": null,
+  "qase_project_code": "RWA",
+  "max_cases": 60,
+  "delay_between_requests_ms": 800,
+  "headless": false,
+  "explore_depth": 3,
+  "default_parent_suite": "UI"
+}
