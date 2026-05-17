@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -X POST https://api.qase.io/v1/case/RWA -H 'Token: 1ccc496d0c44fb0d3a5871ded01f79e83a232662f4365a8fb7444747bc6b62f9' -H 'Content-Type: application/json' -d '{ *)",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_fill_form",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_type",
+      "WebFetch(domain:api.qase.io)",
+      "Bash(curl *)",
+      "Read(//mnt/c/Users/marek/work/projects/realworld-app/**)",
+      "Bash(npx playwright *)",
+      "Bash(node_modules/.bin/playwright test *)",
+      "Bash(npx --prefix /mnt/c/Users/marek/work/projects/realworld-app playwright test --list --config /mnt/c/Users/marek/work/projects/realworld-app/tests/playwright/playwright.config.ts)",
+      "Bash(/mnt/c/Users/marek/work/projects/realworld-app/node_modules/.bin/playwright test *)"
+    ]
+  }
+}
