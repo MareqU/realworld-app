@@ -6,13 +6,13 @@ test.use({ storageState: { cookies: [], origins: [] } });
 
 test.describe('Authorization', () => {
 
-    test('should redirect unauthenticated user to signin page', async ({ page, authValidations }) => {
+    test('Redirect unauthenticated user to signin page', async ({ page, authValidations }) => {
         await page.goto('/personal');
 
         await authValidations.expectRedirectedToSignIn();
     });
 
-    test('should redirect to the home page after login', async ({ signInPage, authValidations }) => {
+    test('Redirect to the home page after login', async ({ signInPage, authValidations }) => {
 
         // Uses the seeded test credentials from .env
         await signInPage.login(process.env.TEST_USER, process.env.TEST_PASS);
@@ -20,7 +20,7 @@ test.describe('Authorization', () => {
         await authValidations.expectRedirectedToHome();
     });
 
-    test('should remember a user for 30 days after login', async ({ page, context, signInPage, sideNav, authValidations }) => {
+    test('Remember a user for 30 days after login', async ({ page, context, signInPage, sideNav, authValidations }) => {
 
         await signInPage.goto();
         await signInPage.usernameInput.fill(process.env.TEST_USER!);
@@ -38,7 +38,7 @@ test.describe('Authorization', () => {
         await authValidations.expectRedirectedToSignIn();
     });
 
-    test('should allow a visitor to sign-up, login, and logout', async ({ page, signInPage, signUpPage, onboardingPage, sideNav, authValidations }) => {
+    test('Allow a visitor to sign-up, login, and logout', async ({ page, signInPage, signUpPage, onboardingPage, sideNav, authValidations }) => {
         const userInfo = {
             firstName: 'Bob',
             lastName: 'Ross',
@@ -82,7 +82,7 @@ test.describe('Authorization', () => {
         await authValidations.expectRedirectedToSignIn();
     });
 
-    test('should display login errors', async ({ signInPage, authValidations }) => {
+    test('Display login errors', async ({ signInPage, authValidations }) => {
         await signInPage.goto();
 
         await signInPage.usernameInput.fill('User');
@@ -97,7 +97,7 @@ test.describe('Authorization', () => {
         await authValidations.expectSignInSubmitDisabled();
     });
 
-    test('should display signup errors', async ({ signUpPage, authValidations }) => {
+    test('Display signup errors', async ({ signUpPage, authValidations }) => {
         await signUpPage.goto();
 
         await signUpPage.firstNameInput.fill('First');
@@ -127,13 +127,13 @@ test.describe('Authorization', () => {
         await authValidations.expectSignUpSubmitDisabled();
     });
 
-    test('should error for an invalid user', async ({ signInPage, authValidations }) => {
+    test('Error for an invalid user', async ({ signInPage, authValidations }) => {
         await signInPage.login('invalidUserName', 'invalidPa$$word');
 
         await authValidations.expectInvalidCredentialsError();
     });
 
-    test('should error for an invalid password for existing user', async ({ signInPage, authValidations }) => {
+    test('Error for an invalid password for existing user', async ({ signInPage, authValidations }) => {
 
         await signInPage.login(process.env.TEST_USER, 'INVALID');
 
