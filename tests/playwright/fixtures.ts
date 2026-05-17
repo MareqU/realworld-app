@@ -20,6 +20,7 @@ import { BankTransferValidations } from './support/validations/api/bankTransferV
 import { BankAccountValidations } from './support/validations/api/bankAccountValidations';
 import { BankAccountsValidations } from './support/validations/ui/bankAccountsValidations';
 import { AuthValidations } from './support/validations/ui/authValidations';
+import { UserSettingsValidations } from './support/validations/ui/userSettingsValidations';
 
 // POM
 import { SignInPage } from './support/pages/SignInPage';
@@ -27,6 +28,11 @@ import { SignUpPage } from './support/pages/SignUpPage';
 import { OnboardingPage } from './support/pages/OnboardingPage';
 import { SideNavPage } from './support/pages/SideNavPage';
 import { BankAccountsPage } from './support/pages/BankAccountsPage';
+import { NewTransactionPage } from './support/pages/NewTransactionPage';
+import { TransactionFeedPage } from './support/pages/TransactionFeedPage';
+import { UserSettingsPage } from './support/pages/UserSettingsPage';
+import { TransactionDetailPage } from './support/pages/TransactionDetailPage';
+import { NotificationsPage } from './support/pages/NotificationsPage';
 
 import fs from 'fs';
 import path from 'path';
@@ -56,6 +62,11 @@ type fixtures = {
     onboardingPage: OnboardingPage;
     sideNav:  SideNavPage;
     bankAccountsPage: BankAccountsPage;
+    newTransactionPage: NewTransactionPage;
+    transactionFeedPage: TransactionFeedPage;
+    userSettingsPage: UserSettingsPage;
+    transactionDetailPage: TransactionDetailPage;
+    notificationsPage: NotificationsPage;
 
     // Validations
     statusValidations: StatusValidations;
@@ -67,6 +78,7 @@ type fixtures = {
     bankAccountValidations: BankAccountValidations;
     bankAccountsValidations: BankAccountsValidations;
     authValidations: AuthValidations;
+    userSettingsValidations: UserSettingsValidations;
 
 };
 
@@ -211,7 +223,31 @@ export const test = base.extend<fixtures>({
 
     bankAccountsPage: async({ page }, use) => {
         await use(new BankAccountsPage(page))
-    }
+    },
+
+    newTransactionPage: async({ page }, use) => {
+        await use(new NewTransactionPage(page))
+    },
+
+    transactionFeedPage: async({ page }, use) => {
+        await use(new TransactionFeedPage(page))
+    },
+
+    userSettingsPage: async({ page }, use) => {
+        await use(new UserSettingsPage(page))
+    },
+
+    transactionDetailPage: async({ page }, use) => {
+        await use(new TransactionDetailPage(page))
+    },
+
+    notificationsPage: async({ page }, use) => {
+        await use(new NotificationsPage(page))
+    },
+
+    userSettingsValidations: async({ userSettingsPage }, use) => {
+        await use(new UserSettingsValidations(userSettingsPage))
+    },
 })
 
 export { expect } from '@playwright/test'
