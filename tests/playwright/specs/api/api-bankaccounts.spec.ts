@@ -65,7 +65,7 @@ test.describe('DELETE /bankAccounts/:bankAccountId', () => {
 
 test.describe('GraphQL /graphql', () => {
 
-    test('gets a list of bank accounts for user', async ({ statusValidations, bankAccountsApi, bankAccountValidations }) => {
+    test('GraphQL - gets a list of bank accounts for user', async ({ statusValidations, bankAccountsApi, bankAccountValidations }) => {
         const response = await bankAccountsApi.graphqlListBankAccounts();
         await statusValidations.expectStatus(response, statusValidations.OK);
 
@@ -73,7 +73,7 @@ test.describe('GraphQL /graphql', () => {
         bankAccountValidations.validateAccountBelongsToUser(body.data.listBankAccount[0], authenticatedUser.id);
     });
 
-    test('creates a new bank account', async ({ statusValidations, bankAccountsApi, bankAccountValidations }) => {
+    test('GraphQL - creates a new bank account', async ({ statusValidations, bankAccountsApi, bankAccountValidations }) => {
         const response = await bankAccountsApi.graphqlCreateBankAccount(createBankAccountPayload());
         await statusValidations.expectStatus(response, statusValidations.OK);
 
@@ -81,7 +81,7 @@ test.describe('GraphQL /graphql', () => {
         bankAccountValidations.validateAccountBelongsToUser(body.data.createBankAccount, authenticatedUser.id);
     });
 
-    test('deletes a bank account', async ({ statusValidations, bankAccountsApi }) => {
+    test('GraphQL - deletes a bank account', async ({ statusValidations, bankAccountsApi }) => {
         const response = await bankAccountsApi.graphqlDeleteBankAccount(bankAccount.id);
         await statusValidations.expectStatus(response, statusValidations.OK);
     });

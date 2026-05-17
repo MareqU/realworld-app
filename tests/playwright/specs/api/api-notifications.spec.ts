@@ -73,7 +73,7 @@ test.describe('PATCH /notifications/:notificationId', () => {
         await statusValidations.expectStatus(response, statusValidations.NO_CONTENT);
     });
 
-    test('errors when invalid field is sent', async ({ statusValidations, notificationsApi }) => {
+    test('errors when invalid field is sent to notification update', async ({ statusValidations, notificationsApi }) => {
         const response = await notificationsApi.updateNotification(notificationId, { notANotificationField: 'not a notification field' });
         await statusValidations.expectStatus(response, statusValidations.INVALID_DATA);
 

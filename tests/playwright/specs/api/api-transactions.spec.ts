@@ -138,7 +138,7 @@ test.describe('PATCH /transactions/:transactionId', () => {
         await statusValidations.expectStatus(response, statusValidations.NO_CONTENT);
     });
 
-    test('errors when an invalid field is sent', async ({ statusValidations, transactionsApi }) => {
+    test('errors when an invalid field is sent to transaction update', async ({ statusValidations, transactionsApi }) => {
         const response = await transactionsApi.updateTransaction(transactionId, { notATransactionField: 'not a transaction field' });
         await statusValidations.expectStatus(response, statusValidations.INVALID_DATA);
 
