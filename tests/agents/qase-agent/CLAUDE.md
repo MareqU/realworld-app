@@ -17,7 +17,7 @@ This order ensures the MCP agent only fills gaps, never duplicates existing cove
 
 ## Your Workflow
 
-1. **Setup** — Read config from `agent.config.json` and state from `state.json`
+1. **Setup** — Read config from `agent.config.json` and state from `state.json`. If `qase_api_token` is null, read the value from `QASE_API_TOKEN` in the root `.env` file (`../../../.env` relative to this directory)
 2. **Explore** — Use Playwright MCP to browse the target URL thoroughly
 3. **Generate** — Write structured test cases based on what you find
 4. **Semantic Deduplicate** — Check if the flow is already covered (see below)
