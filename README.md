@@ -45,6 +45,62 @@ A payment application to demonstrate <strong>real-world</strong> usage of <a hre
 
 ---
 
+## Playwright Test Framework
+
+This fork extends the original Cypress RWA with a production-grade **Playwright test framework** and an **AI-driven test case generator** built on top of it.
+
+### Architecture
+
+```
+tests/playwright/
+├── fixtures.ts                  # Single registration point for all fixtures
+├── playwright.config.ts         # 3 projects: setup → api (serial) + chromium (parallel)
+├── setup/                       # auth.setup.ts — saves session to disk; db.setup.ts — seeds DB
+├── specs/
+│   ├── api/                     # REST + GraphQL tests (one file per resource)
+│   └── ui/                      # E2E browser tests
+└── support/
+    ├── api-objects/             # Typed API wrappers — one class per resource
+    ├── pages/                   # Page Object Model
+    ├── factories/               # faker-based payload builders
+    └── validations/             # Assertion helpers — UI and API layers separate
+```
+
+### Coverage
+
+| Layer | Specs |
+|---|---|
+| **UI / E2E** | auth, onboarding, bank accounts, transactions, transaction feed, transaction detail, notifications, user settings, navigation |
+| **API** | login, logout, users, bank accounts, bank transfers, transactions, comments, likes, contacts, notifications — plus GraphQL variants |
+
+### Qase TMS Integration
+
+- **Reporter** — test results stream to Qase after every run (`playwright-qase-reporter` wired into `playwright.config.ts`)
+- **AI Agent** (`tests/agents/qase-agent/`) — autonomous Claude Code agent that:
+  1. Parses all `*.spec.ts` files and syncs them into Qase suites
+  2. Browses the live app with Playwright MCP to discover flows not yet covered
+  3. Generates structured test cases with **semantic deduplication** — skips cases that are functionally identical even if worded differently
+  4. Handles rate limits and resumes from checkpoint (`state.json`) after interruption
+
+### Stack
+
+`Playwright` · `TypeScript` · `Faker.js` · `Qase TMS` · `GitHub Actions` · `Claude Code (AI agent)`
+
+### Running the tests
+
+```bash
+cd tests/playwright
+
+npx playwright test                    # all
+npx playwright test --project=api      # API only
+npx playwright test --project=chromium # UI only
+npx playwright show-report             # open HTML report
+```
+
+> The app starts automatically via `webServer` config. Requires `.env` (repo root) with `TEST_USER`, `TEST_PASS`, and optionally `QASE_API_TOKEN` for TMS reporting.
+
+---
+
 ## Features
 
 🛠 Built with [React][reactjs], [XState][xstate], [Express][express], [lowdb][lowdb], [Material-UI][material-ui] and [TypeScript][typescript]
