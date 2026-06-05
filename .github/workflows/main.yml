@@ -19,6 +19,7 @@ jobs:
       PORT: ${{ vars.PORT }}
       TEST_USER: ${{ secrets.TEST_USER }}
       TEST_PASS: ${{ secrets.TEST_PASS }}
+      QASE_API_TOKEN: ${{secrets.QASE_API_TOKEN}}
 
     steps:
       - name: Checkout

@@ -28,7 +28,25 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : 4,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: [
+    ['list'],
+    ["playwright-qase-reporter",
+      {
+        "mode":"testops",
+        "debug":true,
+        "testops":{
+            "api":{
+              "token":process.env.QASE_API_TOKEN
+            },
+            "project":"RWA",
+
+            "run":{
+              "complete":true
+            }
+        }
+      }
+    ]
+  ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     //baseURL: `http://localhost:${process.env.PORT}`,
