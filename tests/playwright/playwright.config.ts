@@ -30,22 +30,22 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['list'],
-    // ["playwright-qase-reporter",
-    //   {
-    //     "mode":"testops",
-    //     "debug":true,
-    //     "testops":{
-    //         "api":{
-    //           "token":process.env.QASE_API_TOKEN
-    //         },
-    //         "project":"RWA",
+    ["playwright-qase-reporter",
+      {
+        "mode":"testops",
+        "debug":true,
+        "testops":{
+            "api":{
+              "token":process.env.QASE_API_TOKEN
+            },
+            "project":"RWA",
 
-    //         "run":{
-    //           "complete":true
-    //         }
-    //     }
-    //   }
-    // ]
+            "run":{
+              "complete":true
+            }
+        }
+      }
+    ]
   ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
