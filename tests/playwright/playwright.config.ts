@@ -20,7 +20,7 @@ export default defineConfig({
     '**/src/__tests__/**',
   ],
   /* Run tests in files in parallel */
-  fullyParallel: true,
+  fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
@@ -30,22 +30,22 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['list'],
-    ["playwright-qase-reporter",
-      {
-        "mode":"testops",
-        "debug":true,
-        "testops":{
-            "api":{
-              "token":process.env.QASE_API_TOKEN
-            },
-            "project":"RWA",
+    // ["playwright-qase-reporter",
+    //   {
+    //     "mode":"testops",
+    //     "debug":true,
+    //     "testops":{
+    //         "api":{
+    //           "token":process.env.QASE_API_TOKEN
+    //         },
+    //         "project":"RWA",
 
-            "run":{
-              "complete":true
-            }
-        }
-      }
-    ]
+    //         "run":{
+    //           "complete":true
+    //         }
+    //     }
+    //   }
+    // ]
   ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
@@ -87,6 +87,7 @@ export default defineConfig({
       name: 'chromium',
       testDir: './specs/ui',
       testMatch: '**/*.spec.ts',
+      fullyParallel: false,
       use: { 
         ...devices['Desktop Chrome'],
         baseURL: process.env.PORT
