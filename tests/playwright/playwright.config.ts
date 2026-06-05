@@ -30,10 +30,11 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['list'],
+    ['html', { open: 'never' }],
     ["playwright-qase-reporter",
       {
         "mode":"testops",
-        "debug":true,
+        "debug":false,
         "testops":{
             "api":{
               "token":process.env.QASE_API_TOKEN
