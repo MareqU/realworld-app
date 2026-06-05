@@ -1,5 +1,3 @@
----
-
 ## Playwright Test Framework
 
 This fork extends the original Cypress RWA with a production-grade **Playwright test framework** and an **AI-driven test case generator** built on top of it.
