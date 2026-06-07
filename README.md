@@ -28,6 +28,7 @@ tests/playwright/
 
 ### Qase TMS Integration
 
+- **Qase link** - https://app.qase.io/project/RWA/
 - **Reporter** — test results stream to Qase after every run (`playwright-qase-reporter` wired into `playwright.config.ts`)
 - **AI Agent** (`tests/agents/qase-agent/`) — autonomous Claude Code agent that:
   1. Parses all `*.spec.ts` files and syncs them into Qase suites

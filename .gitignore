@@ -53,9 +53,17 @@ amplifytools.xcconfig
 !.yarn/sdks
 !.yarn/versions
 
+# Logs
+/logs/
+
 # Playwright
 /test-results/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
 /tests/playwright/.auth/
+/tests/playwright/logs/
+
+# Qase agent runtime files
+/tests/agents/qase-agent/.playwright-mcp/
+/tests/agents/qase-agent/agent.log
