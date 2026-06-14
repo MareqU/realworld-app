@@ -1,6 +1,6 @@
 # Sync Existing Playwright Tests to Qase
 
-Read `agent.config.json` and `state.json` first.
+Read `agent.config.json` and `tests/agents/shared/state.json` first.
 
 ## Your Goal
 
@@ -14,7 +14,7 @@ Scan the Playwright test files in this repository, extract all test cases with t
    - Files matching `**/*.spec.ts`, `**/*.spec.js`, `**/*.test.ts`, `**/*.test.js`
    - Focus on the `tests/playwright` directory first, then scan the rest of the repo
 2. List every file found and log them to `agent.log`
-3. Skip any files already tracked in `state.json` under `synced_files`
+3. Skip any files already tracked in `tests/agents/shared/state.json` under `qase.synced_files`
 
 ---
 
@@ -49,10 +49,10 @@ For each test file, read the source code and extract:
 
 For each extracted test case:
 
-1. Check `state.json` pushed_titles — skip if already there
+1. Check `tests/agents/shared/state.json` qase.pushed_titles — skip if already there
 2. If the suite doesn't exist yet:
    - POST `https://api.qase.io/v1/suite/{qase_project_code}` with `{ "title": "<suite_title>" }`
-   - Save the returned `suite_id` to `state.json` suites
+   - Save the returned `suite_id` to `tests/agents/shared/state.json` qase_suites
 3. POST `https://api.qase.io/v1/case/{qase_project_code}`:
 ```json
 {
@@ -71,9 +71,9 @@ For each extracted test case:
 }
 ```
 4. On success:
-   - Add title to `state.json` pushed_titles
-   - Increment `total_pushed`
-   - Save `state.json`
+   - Add title to `tests/agents/shared/state.json` qase.pushed_titles
+   - Increment `qase.total_pushed`
+   - Save `tests/agents/shared/state.json`
 5. Wait 300ms before the next API call
 6. On 429: wait 60 seconds and retry
 
@@ -82,8 +82,8 @@ For each extracted test case:
 ## Phase 4 — Mark File as Done
 
 After all tests from a file are pushed:
-- Add the file path to `state.json` under `synced_files`
-- Save `state.json`
+- Add the file path to `tests/agents/shared/state.json` under `qase.synced_files`
+- Save `tests/agents/shared/state.json`
 
 ---
 

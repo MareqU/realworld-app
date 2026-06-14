@@ -1,13 +1,13 @@
 # Run QA Agent — Explore & Generate Missing Test Cases
 
-Read `agent.config.json` and `state.json` first. Follow all rules in `CLAUDE.md`.
+Read `agent.config.json` and `tests/agents/shared/state.json` first. Follow all rules in `CLAUDE.md`.
 
 ---
 
 ## Phase 0 — Guard Check
 
-1. Read `state.json`
-2. Check if `synced_files` array is empty
+1. Read `tests/agents/shared/state.json`
+2. Check if `qase.synced_files` array is empty
 3. If empty → **STOP immediately** and print:
    ```
    ⚠️  No existing Playwright tests have been synced yet.
@@ -17,20 +17,20 @@ Read `agent.config.json` and `state.json` first. Follow all rules in `CLAUDE.md`
 
    Once sync is complete, run /run-agent again.
    ```
-4. If `synced_files` has at least one entry → continue to Phase 1
+4. If `qase.synced_files` has at least one entry → continue to Phase 1
 
 ---
 
 ## Phase 1 — Setup
 
 - Load config from `agent.config.json`
-- Load full state from `state.json` — especially `pushed_titles`, `suites`, and `agent_pushed`
+- Load full state from `tests/agents/shared/state.json` — especially `qase.pushed_titles`, `qase_suites`, and `qase.agent_pushed`
 - Read `default_parent_suite` from config (e.g. `"UI"`) — this is the top-level suite all new cases will be nested under
-- Note: `max_cases` applies ONLY to `agent_pushed` — not `total_pushed`. `/sync-playwright` pushes do not count toward this limit.
+- Note: `max_cases` applies ONLY to `qase.agent_pushed` — not `qase.total_pushed`. `/sync-playwright` pushes do not count toward this limit.
 - Log start time and counts to `agent.log`
-- Print: `ℹ️  Existing coverage: {pushed_titles.length} test cases already in Qase`
-- Print: `ℹ️  Agent has pushed {agent_pushed} cases so far (limit: {max_cases})`
-- Print: `ℹ️  Remaining budget: {max_cases - agent_pushed} new cases`
+- Print: `ℹ️  Existing coverage: {qase.pushed_titles.length} test cases already in Qase`
+- Print: `ℹ️  Agent has pushed {qase.agent_pushed} cases so far (limit: {max_cases})`
+- Print: `ℹ️  Remaining budget: {max_cases - qase.agent_pushed} new cases`
 - Print: `ℹ️  All new cases will be created under suite: "{default_parent_suite}"`
 
 ---
@@ -51,7 +51,7 @@ For each page visited:
 
 ## Phase 3 — Semantic Deduplication
 
-Before queuing any candidate for pushing, check it against `state.json` pushed_titles:
+Before queuing any candidate for pushing, check it against `tests/agents/shared/state.json` qase.pushed_titles:
 
 **Check 1 — Exact title match:**
 - If candidate title exactly matches any pushed title → SKIP
@@ -88,17 +88,17 @@ Combine the suite name + normalised intent tokens into a fingerprint.
 For each candidate that passed deduplication:
 
 1. **Resolve the parent suite (`default_parent_suite` from config):**
-   - Check `state.json` suites for a key matching `default_parent_suite` (e.g. `"UI"`)
+   - Check `tests/agents/shared/state.json` qase_suites for a key matching `default_parent_suite` (e.g. `"UI"`)
    - If not found → POST `https://api.qase.io/v1/suite/{qase_project_code}` with `{ "title": "UI" }`
-   - Save returned `parent_suite_id` to `state.json` suites under key `"UI"`
+   - Save returned `parent_suite_id` to `tests/agents/shared/state.json` qase_suites under key `"UI"`
 
 2. **Resolve the feature sub-suite (e.g. "Login", "Dashboard"):**
-   - Check `state.json` suites for a key matching `"{default_parent_suite}/{suite_title}"` (e.g. `"UI/Login"`)
+   - Check `tests/agents/shared/state.json` qase_suites for a key matching `"{default_parent_suite}/{suite_title}"` (e.g. `"UI/Login"`)
    - If not found → POST `https://api.qase.io/v1/suite/{qase_project_code}` with:
      ```json
      { "title": "<suite_title>", "parent_id": <parent_suite_id> }
      ```
-   - Save returned `suite_id` to `state.json` suites under key `"UI/Login"`
+   - Save returned `suite_id` to `tests/agents/shared/state.json` qase_suites under key `"UI/Login"`
 
 3. POST `https://api.qase.io/v1/case/{qase_project_code}`:
 ```json
@@ -115,9 +115,9 @@ For each candidate that passed deduplication:
 }
 ```
 4. On success:
-   - Add title to `state.json` pushed_titles
-   - Increment BOTH `agent_pushed` and `total_pushed`
-   - Save `state.json` immediately
+   - Add title to `tests/agents/shared/state.json` qase.pushed_titles
+   - Increment BOTH `qase.agent_pushed` and `qase.total_pushed`
+   - Save `tests/agents/shared/state.json` immediately
 5. Wait 300ms before next call
 6. On 429 → wait 60 seconds, retry once
 
@@ -125,7 +125,7 @@ For each candidate that passed deduplication:
 
 ## Phase 5 — Continue or Stop
 
-- If `agent_pushed` >= `max_cases` → STOP (do NOT use total_pushed for this check)
+- If `qase.agent_pushed` >= `max_cases` → STOP (do NOT use qase.total_pushed for this check)
 - If queue has unvisited URLs and depth <= `explore_depth` → visit next, back to Phase 2
 - If queue empty → STOP
 

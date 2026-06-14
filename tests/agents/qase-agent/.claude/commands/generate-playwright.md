@@ -1,18 +1,18 @@
 # Generate Playwright Tests from Qase Test Cases (POM + Best Practices)
 
-Read `agent.config.json` and `state.json` first. Follow all rules in `CLAUDE.md`.
+Read `agent.config.json` and `tests/agents/shared/state.json` first. Follow all rules in `CLAUDE.md`.
 
 ---
 
 ## Phase 0 — Guard Check
 
 1. Read `state.json`
-2. Check if `synced_files` is empty → STOP and print:
+2. Check if `qase.synced_files` is empty → STOP and print:
    ```
    ⚠️  Run /sync-playwright first before generating new tests.
    This ensures the agent knows which tests already exist.
    ```
-3. If `synced_files` has entries → continue
+3. If `qase.synced_files` has entries → continue
 
 ---
 
@@ -76,8 +76,8 @@ Headers: Token: {qase_api_token}, Content-Type: application/json
 Paginate if response total > 100 (increment offset by 100).
 
 For each case:
-- If title is in `state.json` pushed_titles from `/sync-playwright` → **SKIP** (already automated)
-- If title is NOT in pushed_titles → **needs automation** → add to queue grouped by suite
+- If title is in `state.json` qase.pushed_titles from `/sync-playwright` → **SKIP** (already automated)
+- If title is NOT in qase.pushed_titles → **needs automation** → add to queue grouped by suite
 
 Print:
 ```
@@ -238,9 +238,9 @@ Always route interactions through Page Object methods:
 ## Phase 6 — Save & Register
 
 After writing each file:
-1. Add spec file path to `state.json` synced_files
-2. Add all generated test titles to `state.json` pushed_titles
-3. Save `state.json`
+1. Add spec file path to `state.json` qase.synced_files
+2. Add all generated test titles to `state.json` qase.pushed_titles
+3. Save `tests/agents/shared/state.json`
 4. Log: `[GENERATED] tests/playwright/<filename>.spec.ts — X tests`
 
 ---

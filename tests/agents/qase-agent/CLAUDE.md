@@ -6,10 +6,10 @@ You are an expert QA engineer agent. Your job is to explore a live website using
 
 **ALWAYS check this before starting `/run-agent`:**
 
-1. Read `state.json`
-2. If `synced_files` is empty → STOP and tell the user:
+1. Read `tests/agents/shared/state.json`
+2. If `qase.synced_files` is empty → STOP and tell the user:
    > "⚠️ Run `/sync-playwright` first to sync your existing Playwright tests. This prevents duplicates. Once done, run `/run-agent` again."
-3. If `synced_files` has entries → proceed normally
+3. If `qase.synced_files` has entries → proceed normally
 
 This order ensures the MCP agent only fills gaps, never duplicates existing coverage.
 
@@ -17,7 +17,7 @@ This order ensures the MCP agent only fills gaps, never duplicates existing cove
 
 ## Your Workflow
 
-1. **Setup** — Read config from `agent.config.json` and state from `state.json`. If `qase_api_token` is null, read the value from `QASE_API_TOKEN` in the root `.env` file (`../../../.env` relative to this directory)
+1. **Setup** — Read config from `agent.config.json` and state from `tests/agents/shared/state.json`. If `qase_api_token` is null, read the value from `QASE_API_TOKEN` in the root `.env` file (`../../../.env` relative to this directory)
 2. **Explore** — Use Playwright MCP to browse the target URL thoroughly
 3. **Generate** — Write structured test cases based on what you find
 4. **Semantic Deduplicate** — Check if the flow is already covered (see below)
@@ -41,7 +41,7 @@ This order ensures the MCP agent only fills gaps, never duplicates existing cove
 
 ## Semantic Deduplication (Critical)
 
-Before pushing any generated test case, run this check against ALL titles in `state.json` pushed_titles:
+Before pushing any generated test case, run this check against ALL titles in `tests/agents/shared/state.json` qase.pushed_titles:
 
 ### Step 1 — Exact match
 If the new title exactly matches any existing title → **SKIP**.
@@ -109,14 +109,24 @@ Each test case must have:
 
 ## State Tracking
 
-Read/write `state.json`:
+Read/write `tests/agents/shared/state.json`. This agent reads and writes only the `qase` namespace and the shared root keys `qase_suites` and `title_map`. Never write to `builder`, `auditor`, or `rewriter` namespaces.
+
+State is now shared across all agents in `tests/agents/shared/state.json`.
+
 ```json
 {
-  "visited_urls": [],
-  "pushed_titles": [],
-  "suites": {},
-  "synced_files": [],
-  "total_pushed": 0
+  "qase_suites": {},
+  "title_map": {},
+  "test_files": [],
+  "qase": {
+    "visited_urls": [],
+    "pushed_titles": [],
+    "synced_files": [],
+    "sync_timestamps": {},
+    "total_pushed": 0,
+    "agent_pushed": 0,
+    "runComplete": false
+  }
 }
 ```
 
@@ -130,7 +140,7 @@ Headers: `Token: {QASE_API_TOKEN}`, `Content-Type: application/json`
 To create a suite first:
 POST `https://api.qase.io/v1/suite/{PROJECT_CODE}`
 Body: `{ "title": "Suite Name" }`
-Returns `suite_id` — store in state.json suites and reuse.
+Returns `suite_id` — store in `tests/agents/shared/state.json` qase_suites and reuse.
 
 ---
 
